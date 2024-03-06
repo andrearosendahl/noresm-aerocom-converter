@@ -40,6 +40,8 @@ F10DSTA3 = "0.23"
 F10SSA3 = "0.008"
 # Rair
 RAIR = "287.0"
+# yaml file used for conversion commands
+YAML_FILE = "./conversion.yaml"
 
 
 class Level(str, Enum):
@@ -76,9 +78,13 @@ def _make_aerocom_dataset(
     variable: str,
     instruction: dict[str, str],
     year: str,
-) -> Dataset:
-    command = f"data.assign({variable} = lambda x: {instruction['command']})"
-    new_data = eval(command)
+) -> Dataset | None:
+    command = f"data.assign({variable} = lambda x: {instruction['formula']})"
+    try:
+        new_data = eval(command)
+    except Exception as e:
+        print(f"Could not due conversion for {variable} due to {str(e)}")
+        return
     new_data = new_data[[variable, "time", "time_bnds", "lat", "lon"]]
     new_data.time.attrs["units"] = f"days since {year}-01-01 00:00:00"
     return new_data
@@ -92,6 +98,13 @@ def save_aerocom_data(
     )
     typer.echo(f"Saving file to {out_file}")
     data.to_netcdf(out_file)
+
+def get_conversion_yaml() -> dict[str, dict[str, str]]:
+    with open(YAML_FILE, "r") as f:
+        instructions = yaml.safe_load(f)
+    
+    return instructions
+
 
 
 def _convert(
@@ -107,7 +120,7 @@ def _convert(
 
         years[i] = f"{int(year):04}"
 
-    instructions = get_conversion_intstructions(LL)
+    instructions = get_conversion_yaml()#get_conversion_intstructions(LL)
     if variables is None:
         variables = list(instructions.keys())
     files = _get_file_list(inputdir, experiment, years)
@@ -119,6 +132,9 @@ def _convert(
                 new_data = _make_aerocom_dataset(
                     data, var, instructions[var], f"{baseyear:04}"
                 )
+                if new_data is None:
+                    continue
+                
                 save_aerocom_data(
                     new_data,
                     outputdir,
