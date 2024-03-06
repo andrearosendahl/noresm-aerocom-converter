@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "noresm-aerocom-converter"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Heinesen <danielh@met.no>"]
+readme = "README.md"
+packages = [{include = "noresm-aerocom-converter"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = "^0.9.0"
+rich = "^13.7.1"
+pathlib = "^1.0.1"
+black = "^24.2.0"
+xarray = "^2024.2.0"
+netcdf4 = "^1.6.5"
+dask = "^2024.2.1"
+pyyaml = "^6.0.1"
+cftime = "^1.6.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
