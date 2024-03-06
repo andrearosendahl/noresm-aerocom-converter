@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Callable
+from typing import Callable, Optional
 from xarray import Dataset
 import re
 from functools import partial
-
+import yaml
 
 class Instruction:
     TOTAL_FAC = "([+-]?[0-9]*[.]?[0-9]+)\*\((.*)\)"
@@ -76,7 +76,7 @@ F10SSA3 = 0.008
 RAIR = 287.0
 
 
-def get_conversion_intstructions(LL: str) -> dict[str, dict[str, str]]:
+def get_conversion_intstructions(LL: str, yaml_file: Optional[str] = None ) -> dict[str, dict[str, str]]:
     ARRAY = [
         f"area&GRIDAREA&m2&S",
         f"landf&LANDFRAC&1&S",
@@ -126,7 +126,7 @@ def get_conversion_intstructions(LL: str) -> dict[str, dict[str, str]]:
         f"loadduDSTA2&cb_DST_A2+cb_DST_A2_OCW&kg m-2&C",
         f"loadduDSTA3&cb_DST_A3+cb_DST_A3_OCW&kg m-2&C",
         f"loadso2&cb_SO2&kg m-2&C",
-        f"loadso4&{SF1}*(cb_SO4_A1+{SF2/SF1}*cb_SO4_A2+cb_SO4_NA+cb_SO4_PR+cb_SO4_AC+cb_SO4_A1_OCW+{SF2/SF1}*cb_SO4_A2_OCW+cb_SO4_AC_OCW+cb_SO4_NA_OCW+cb_SO4_PR_OCW)&kg m-2&C",
+        f"loadso4&{SF1}*(cb_SO4_A1+{SF2}/{SF1}*cb_SO4_A2+cb_SO4_NA+cb_SO4_PR+cb_SO4_AC+cb_SO4_A1_OCW+{SF2}/{SF1}*cb_SO4_A2_OCW+cb_SO4_AC_OCW+cb_SO4_NA_OCW+cb_SO4_PR_OCW)&kg m-2&C",
         f"loaddms&cb_DMS&kg m-2&C",
         f"clt&CLDTOT&1&C",
         f"cldlow&CLDLOW&1&C",
@@ -173,28 +173,53 @@ def get_conversion_intstructions(LL: str) -> dict[str, dict[str, str]]:
         f"cl3D&CLOUD&1&M",
         f"ccn&CCN6&cm3&M",
         f"mmraerh2o&MMR_AH2O&kg kg-1&M",
-        f"mmrso4&{SF1}*(SO4_A1+{SF2/SF1}*SO4_A2+SO4_AC+SO4_NA+SO4_PR+SO4_A1_OCW+{SF2/SF1}*SO4_A2_OCW+SO4_AC_OCW+SO4_NA_OCW+SO4_PR_OCW)&kg kg-1&M",
+        f"mmrso4&{SF1}*(SO4_A1+{SF2}/{SF1}*SO4_A2+SO4_AC+SO4_NA+SO4_PR+SO4_A1_OCW+{SF2}/{SF1}*SO4_A2_OCW+SO4_AC_OCW+SO4_NA_OCW+SO4_PR_OCW)&kg kg-1&M",
         f"mmroa&OM_AC+OM_AI+OM_NI+SOA_NA+SOA_A1+OM_AC_OCW+OM_AI_OCW+OM_NI_OCW+SOA_NA_OCW+SOA_A1_OCW&kg kg-1&M",
         f"mmrbc&BC_A+BC_AC+BC_AX+BC_N+BC_NI+BC_AI+BC_A_OCW+BC_AC_OCW+BC_N_OCW+BC_NI_OCW+BC_AI_OCW&kg kg-1&M",
         f"mmrss&SS_A1+SS_A2+SS_A3+SS_A1_OCW+SS_A2_OCW+SS_A3_OCW&kg kg-1&M",
         f"mmrdu&DST_A2+DST_A3+DST_A2_OCW+DST_A3_OCW&kg kg-1&M",
-        # f"ccn860[time,lat,lon]&(CCN6(:,25,:,:))&cm3&C",
-        # f"pressure[time,lev,lat,lon]&float(P0*hyam+PS*hybm)&Pa&M",
-        # f"rho[time,lev,lat,lon]&float(P0*hyam+PS*hybm)/({RAIR}*T(:,:,:,:))&kg m-3&M",
-        # f"sconcso4[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*{SF1}*(SO4_A1(:,{LL},:,:)+{SF2/SF1}*SO4_A2(:,{LL},:,:)+SO4_PR(:,{LL},:,:)+SO4_NA(:,{LL},:,:)+SO4_A1_OCW(:,{LL},:,:)+{SF2/SF1}*SO4_A2_OCW(:,{LL},:,:)+SO4_PR_OCW(:,{LL},:,:)+SO4_NA_OCW(:,{LL},:,:))*1.e9&ug m-3&S",
-        # f"sconcso2[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*SO2(:,{LL},:,:)*1.e9*64.066/28.97&ug m-3&S",
-        # f"sconcdms[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*DMS(:,{LL},:,:)*1.e9*62.13/28.97&ug m-3&S",
-        # f"sconcss[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(SS_A1(:,{LL},:,:)+SS_A2(:,{LL},:,:)+SS_A3(:,{LL},:,:)+SS_A1_OCW(:,{LL},:,:)+SS_A2_OCW(:,{LL},:,:)+SS_A3_OCW(:,{LL},:,:))*1.e9&ug m-3&S",
-        # f"sconcdust[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(DST_A2(:,{LL},:,:)+DST_A3(:,{LL},:,:)+DST_A2_OCW(:,{LL},:,:)+DST_A3_OCW(:,{LL},:,:))*1.e9&ug m-3&S",
-        # f"sconcdustpm25&C_MIPM25&ug m-3&S",
-        # f"sconcbc[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(BC_A(:,{LL},:,:)+BC_AC(:,{LL},:,:)+BC_AX(:,{LL},:,:)+BC_N(:,{LL},:,:)+BC_NI(:,{LL},:,:)+BC_AI(:,{LL},:,:)+BC_A_OCW(:,{LL},:,:)+BC_AC_OCW(:,{LL},:,:)+BC_N_OCW(:,{LL},:,:)+BC_NI_OCW(:,{LL},:,:)+BC_AI_OCW(:,{LL},:,:))*1.e9&ug m-3&S",
-        # f"sconcoa[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(OM_AC(:,{LL},:,:)+OM_AI(:,{LL},:,:) +OM_NI(:,{LL},:,:)+SOA_NA(:,{LL},:,:)+SOA_A1(:,{LL},:,:)+OM_AC_OCW(:,{LL},:,:)+OM_AI_OCW(:,{LL},:,:)+OM_NI_OCW(:,{LL},:,:)+SOA_NA_OCW(:,{LL},:,:)+SOA_A1_OCW(:,{LL},:,:))*1.e9&ug m-3&S",
-        # f"sconcpm25&PM25&ug m-3&S",
-        # f"sconcpm10[time,lat,lon]&PMTOT(:,:,:)-PS(:,:,:)/287.0/TS(:,:,:)*1.e9*({F10DSTA3}*DST_A3(:,{LL},:,:)+{F10SSA3}*SS_A3(:,{LL},:,:))&ug m-3&S",
-        # f"sconcpm10by20[time,lat,lon]&(PMTOT(:,:,:)-PS(:,:,:)/287.0/TS(:,:,:)*1.e9*({F10DSTA3}*DST_A3(:,{LL},:,:)+{F10SSA3}*SS_A3(:,{LL},:,:)))/(PMTOT(:,:,:))&1&S",
+        f"ccn860[time,lat,lon]&(CCN6(:,25,:,:))&cm3&C",
+        f"pressure[time,lev,lat,lon]&float(P0*hyam+PS*hybm)&Pa&M",
+        f"rho[time,lev,lat,lon]&float(P0*hyam+PS*hybm)/({RAIR}*T(:,:,:,:))&kg m-3&M",
+        f"sconcso4[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*{SF1}*(SO4_A1(:,{{LL}},:,:)+{SF2}/{SF1}*SO4_A2(:,{{LL}},:,:)+SO4_PR(:,{{LL}},:,:)+SO4_NA(:,{{LL}},:,:)+SO4_A1_OCW(:,{{LL}},:,:)+{SF2}/{SF1}*SO4_A2_OCW(:,{{LL}},:,:)+SO4_PR_OCW(:,{{LL}},:,:)+SO4_NA_OCW(:,{{LL}},:,:))*1.e9&ug m-3&S",
+        f"sconcso2[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*SO2(:,{{LL}},:,:)*1.e9*64.066/28.97&ug m-3&S",
+        f"sconcdms[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*DMS(:,{{LL}},:,:)*1.e9*62.13/28.97&ug m-3&S",
+        f"sconcss[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(SS_A1(:,{{LL}},:,:)+SS_A2(:,{{LL}},:,:)+SS_A3(:,{{LL}},:,:)+SS_A1_OCW(:,{{LL}},:,:)+SS_A2_OCW(:,{{LL}},:,:)+SS_A3_OCW(:,{{LL}},:,:))*1.e9&ug m-3&S",
+        f"sconcdust[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(DST_A2(:,{{LL}},:,:)+DST_A3(:,{{LL}},:,:)+DST_A2_OCW(:,{{LL}},:,:)+DST_A3_OCW(:,{{LL}},:,:))*1.e9&ug m-3&S",
+        f"sconcdustpm25&C_MIPM25&ug m-3&S",
+        f"sconcbc[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(BC_A(:,{{LL}},:,:)+BC_AC(:,{{LL}},:,:)+BC_AX(:,{{LL}},:,:)+BC_N(:,{{LL}},:,:)+BC_NI(:,{{LL}},:,:)+BC_AI(:,{{LL}},:,:)+BC_A_OCW(:,{{LL}},:,:)+BC_AC_OCW(:,{{LL}},:,:)+BC_N_OCW(:,{{LL}},:,:)+BC_NI_OCW(:,{{LL}},:,:)+BC_AI_OCW(:,{{LL}},:,:))*1.e9&ug m-3&S",
+        f"sconcoa[time,lat,lon]&(PS(:,:,:)/287.0/TS(:,:,:))*(OM_AC(:,{{LL}},:,:)+OM_AI(:,{{LL}},:,:) +OM_NI(:,{{LL}},:,:)+SOA_NA(:,{{LL}},:,:)+SOA_A1(:,{{LL}},:,:)+OM_AC_OCW(:,{{LL}},:,:)+OM_AI_OCW(:,{{LL}},:,:)+OM_NI_OCW(:,{{LL}},:,:)+SOA_NA_OCW(:,{{LL}},:,:)+SOA_A1_OCW(:,{{LL}},:,:))*1.e9&ug m-3&S",
+        f"sconcpm25&PM25&ug m-3&S",
+        f"sconcpm10[time,lat,lon]&PMTOT(:,:,:)-PS(:,:,:)/287.0/TS(:,:,:)*1.e9*({F10DSTA3}*DST_A3(:,{{LL}},:,:)+{F10SSA3}*SS_A3(:,{{LL}},:,:))&ug m-3&S",
+        f"sconcpm10by20[time,lat,lon]&(PMTOT(:,:,:)-PS(:,:,:)/287.0/TS(:,:,:)*1.e9*({F10DSTA3}*DST_A3(:,{{LL}},:,:)+{F10SSA3}*SS_A3(:,{{LL}},:,:)))/(PMTOT(:,:,:))&1&S",
     ]
+    if yaml_file is None:
 
-    return _get_conversion_intstructions(ARRAY, LL)
+        return _get_conversion_intstructions(ARRAY, LL)
+    else:
+        make_yaml(ARRAY, yaml_file)
+        return 
+
+
+def make_yaml(array: list[str], file: str) -> None:
+    instructions = {}
+    for line in array:
+        #words = line.format(LL=LL).split("&")
+        words = line.split("&")
+        aerocom_name = words[0].split("[")[0]
+        instructions[aerocom_name] = dict(
+            new_name=words[0],
+            formula=words[1],
+            units=words[2],
+            coordinates=LEVEL[words[3]] if words[3] in LEVEL else LEVEL["default"],
+        )
+    
+    with open(file, "w") as f:
+        yaml.safe_dump(instructions, f)
+
+    
+
+
 
 
 # AEROCOMNAME&CAMOSLONAME(OR FORMULA)&UNIT&CoordinateType
@@ -216,6 +241,8 @@ def _get_conversion_intstructions(
     return instructions
 
 
+
 if __name__ == "__main__":
-    inst = get_conversion_intstructions(21)
-    breakpoint()
+    yaml_file = "./conversions_test.yaml"
+    inst = get_conversion_intstructions(21, yaml_file)
+    #breakpoint()
