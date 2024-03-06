@@ -330,7 +330,7 @@ od870dustDSTA3:
   units: '1'
 orog:
   coordinates: Surface
-  formula: 0.102*x.PHIS
+  formula: x.PHIS/9.81
   new_name: orog
   units: m
 pr:
@@ -470,17 +470,17 @@ rsutcscaDSTA3:
   units: W m-2
 sconcbc:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*(x.BC_A(:,{LL},:,:)+x.BC_AC(:,{LL},:,:)+x.BC_AX(:,{LL},:,:)+x.BC_N(:,{LL},:,:)+x.BC_NI(:,{LL},:,:)+x.BC_AI(:,{LL},:,:)+x.BC_A_OCW(:,{LL},:,:)+x.BC_AC_OCW(:,{LL},:,:)+x.BC_N_OCW(:,{LL},:,:)+x.BC_NI_OCW(:,{LL},:,:)+x.BC_AI_OCW(:,{LL},:,:))*1.e9
+  formula: (x.PS/287.0/x.TS)*(x.BC_A(:,{LL},:,:)+x.BC_AC(:,{LL},:,:)+x.BC_AX(:,{LL},:,:)+x.BC_N(:,{LL},:,:)+x.BC_NI(:,{LL},:,:)+x.BC_AI(:,{LL},:,:)+x.BC_A_OCW(:,{LL},:,:)+x.BC_AC_OCW(:,{LL},:,:)+x.BC_N_OCW(:,{LL},:,:)+x.BC_NI_OCW(:,{LL},:,:)+x.BC_AI_OCW(:,{LL},:,:))*1e9
   new_name: sconcbc[time,lat,lon]
   units: ug m-3
 sconcdms:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*x.DMS(:,{LL},:,:)*1.e9*62.13/28.97
+  formula: (x.PS/287.0/x.TS)*x.DMS(:,{LL},:,:)*1e9*62.13/28.97
   new_name: sconcdms[time,lat,lon]
   units: ug m-3
 sconcdust:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*(x.DST_A2(:,{LL},:,:)+x.DST_A3(:,{LL},:,:)+x.DST_A2_OCW(:,{LL},:,:)+x.DST_A3_OCW(:,{LL},:,:))*1.e9
+  formula: (x.PS/287.0/x.TS)*(x.DST_A2(:,{LL},:,:)+x.DST_A3(:,{LL},:,:)+x.DST_A2_OCW(:,{LL},:,:)+x.DST_A3_OCW(:,{LL},:,:))*1e9
   new_name: sconcdust[time,lat,lon]
   units: ug m-3
 sconcdustpm25:
@@ -490,17 +490,17 @@ sconcdustpm25:
   units: ug m-3
 sconcoa:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*(x.OM_AC(:,{LL},:,:)+x.OM_AI(:,{LL},:,:) +x.OM_NI(:,{LL},:,:)+x.SOA_NA(:,{LL},:,:)+x.SOA_A1(:,{LL},:,:)+x.OM_AC_OCW(:,{LL},:,:)+x.OM_AI_OCW(:,{LL},:,:)+x.OM_NI_OCW(:,{LL},:,:)+x.SOA_NA_OCW(:,{LL},:,:)+x.SOA_A1_OCW(:,{LL},:,:))*1.e9
+  formula: (x.PS/287.0/x.TS)*(x.OM_AC(:,{LL},:,:)+x.OM_AI(:,{LL},:,:) +x.OM_NI(:,{LL},:,:)+x.SOA_NA(:,{LL},:,:)+x.SOA_A1(:,{LL},:,:)+x.OM_AC_OCW(:,{LL},:,:)+x.OM_AI_OCW(:,{LL},:,:)+x.OM_NI_OCW(:,{LL},:,:)+x.SOA_NA_OCW(:,{LL},:,:)+x.SOA_A1_OCW(:,{LL},:,:))*1e9
   new_name: sconcoa[time,lat,lon]
   units: ug m-3
 sconcpm10:
   coordinates: Surface
-  formula: x.PMTOT-x.PS/287.0/x.TS*1.e9*({F10DSTA3}*x.DST_A3(:,{LL},:,:)+{F10SSA3}*x.SS_A3(:,{LL},:,:))
+  formula: x.PMTOT-x.PS/287.0/x.TS*1e9*({F10DSTA3}*x.DST_A3(:,{LL},:,:)+{F10SSA3}*x.SS_A3(:,{LL},:,:))
   new_name: sconcpm10[time,lat,lon]
   units: ug m-3
 sconcpm10by20:
   coordinates: Surface
-  formula: (x.PMTOT-x.PS/287.0/x.TS*1.e9*({F10DSTA3}*x.DST_A3(:,{LL},:,:)+{F10SSA3}*x.SS_A3(:,{LL},:,:)))/(x.PMTOT)
+  formula: (x.PMTOT-x.PS/287.0/x.TS*1e9*({F10DSTA3}*x.DST_A3(:,{LL},:,:)+{F10SSA3}*x.SS_A3(:,{LL},:,:)))/(x.PMTOT)
   new_name: sconcpm10by20[time,lat,lon]
   units: '1'
 sconcpm25:
@@ -510,17 +510,17 @@ sconcpm25:
   units: ug m-3
 sconcso2:
   coordinates: Surface
-  formula: (x.PS/287.0/TS)*x.SO2(:,{LL},:,:)*1.e9*64.066/28.97
+  formula: (x.PS/287.0/TS)*x.SO2(:,{LL},:,:)*1e9*64.066/28.97
   new_name: sconcso2[time,lat,lon]
   units: ug m-3
 sconcso4:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*{SF1}*(x.SO4_A1(:,{{LL}},:,:)+{SF2}/{SF1}*x.SO4_A2(:,{{LL}},:,:)+x.SO4_PR(:,{{LL}},:,:)+x.SO4_NA(:,{{LL}},:,:)+x.SO4_A1_OCW(:,{{LL}},:,:)+{SF2}/{SF1}*x.SO4_A2_OCW(:,{{LL}},:,:)+x.SO4_PR_OCW(:,{{LL}},:,:)+x.SO4_NA_OCW(:,{{LL}},:,:))*1.e9
+  formula: (x.PS/287.0/x.TS)*{SF1}*(x.SO4_A1(:,{{LL}},:,:)+{SF2}/{SF1}*x.SO4_A2(:,{{LL}},:,:)+x.SO4_PR(:,{{LL}},:,:)+x.SO4_NA(:,{{LL}},:,:)+x.SO4_A1_OCW(:,{{LL}},:,:)+{SF2}/{SF1}*x.SO4_A2_OCW(:,{{LL}},:,:)+x.SO4_PR_OCW(:,{{LL}},:,:)+x.SO4_NA_OCW(:,{{LL}},:,:))*1e9
   new_name: sconcso4[time,lat,lon]
   units: ug m-3
 sconcss:
   coordinates: Surface
-  formula: (x.PS/287.0/x.TS)*(x.SS_A1(:,{LL},:,:)+x.SS_A2(:,{LL},:,:)+x.SS_A3(:,{LL},:,:)+x.SS_A1_OCW(:,{LL},:,:)+x.SS_A2_OCW(:,{LL},:,:)+x.SS_A3_OCW(:,{LL},:,:))*1.e9
+  formula: (x.PS/287.0/x.TS)*(x.SS_A1(:,{LL},:,:)+x.SS_A2(:,{LL},:,:)+x.SS_A3(:,{LL},:,:)+x.SS_A1_OCW(:,{LL},:,:)+x.SS_A2_OCW(:,{LL},:,:)+x.SS_A3_OCW(:,{LL},:,:))*1e9
   new_name: sconcss[time,lat,lon]
   units: ug m-3
 tas:
