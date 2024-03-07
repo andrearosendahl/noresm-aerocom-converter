@@ -185,10 +185,13 @@ def convert(
     inputdir: Annotated[str, typer.Argument(rich_help_panel="Input Directory")],
     outputdir: Annotated[str, typer.Argument(rich_help_panel="Output directory")],
     experiment: Annotated[str, typer.Argument(rich_help_panel="Experiment Name")],
-    fullname: Annotated[str, typer.Argument(rich_help_panel="")],
+    fullname: Annotated[str, typer.Argument(rich_help_panel="Full Name")],
     baseyear: Annotated[int, typer.Argument(rich_help_panel="Reference Year")],
     years: Annotated[List[str], typer.Argument(rich_help_panel="Years")],
-    ll: Annotated[int, typer.Argument(rich_help_panel="")],
+    ll: Annotated[
+        int,
+        typer.Argument(rich_help_panel="Vertical Level (used for some conversions)"),
+    ],
     variables: Annotated[
         Optional[List[str]],
         typer.Option(
