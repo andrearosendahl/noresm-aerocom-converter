@@ -9,7 +9,9 @@ from datetime import datetime
 
 # from conversion_instructions import get_conversion_intstructions
 
-app = typer.Typer()
+app = typer.Typer(
+    help="Small tool for converting NorESM modeldata to Aerocom3 modeldata"
+)
 
 
 AVAILABLEMONTHS = [
@@ -171,7 +173,7 @@ def _convert(
                 )
 
 
-@app.command()
+@app.command(help="Converts modeldata according to arguments and options given in file")
 def from_file(path: Annotated[str, typer.Argument(rich_help_panel="Path to ")]):
     if Path(path).exists():
         with open(path, "r") as f:
@@ -180,7 +182,7 @@ def from_file(path: Annotated[str, typer.Argument(rich_help_panel="Path to ")]):
         _convert(**arguments)
 
 
-@app.command()
+@app.command(help="Converts modeldata according to given arguments and options")
 def convert(
     inputdir: Annotated[str, typer.Argument(rich_help_panel="Input Directory")],
     outputdir: Annotated[str, typer.Argument(rich_help_panel="Output directory")],
