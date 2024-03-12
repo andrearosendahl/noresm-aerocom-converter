@@ -6,6 +6,8 @@ from xarray import open_mfdataset, Dataset
 import yaml
 from pathlib import Path
 from datetime import datetime
+import importlib.resources
+from os.path import dirname, join as joinpath
 
 from rich.console import Console
 from rich.table import Table
@@ -49,7 +51,10 @@ CONSTANTS = dict(
     # yaml file used for conversion commands
 )
 FREQUENCY = "monthly"
-YAML_FILE = "./noresm_aerocom_converter/conversions.yaml"
+
+
+data_dir = joinpath(dirname(__file__), "data")
+YAML_FILE = Path(data_dir, "conversions.yaml")
 
 
 class Level(str, Enum):
