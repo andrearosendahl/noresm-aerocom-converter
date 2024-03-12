@@ -1,9 +1,9 @@
 # noresm-aerocom-converter (NAC)
 Small tool for converting [NorESM](https://www.noresm.org/) output for the use in [AeroTools and PyAerocom](https://github.com/metno/pyaerocom).
 
-AeroTools is a model evaluation toolkit made by the Norwegian Meteorological Institute, and is primarily used to evaluate airpollution models, like [EMEP](https://www.emep.int/). While supporting a handfull of modeldata formats, the main format is *Aerocom3* format.
+AeroTools is a model evaluation toolkit made by the Norwegian Meteorological Institute, and is primarily used to evaluate air pollution models, like [EMEP](https://www.emep.int/). While supporting a handful of modeldata formats, the main format is *Aerocom3* format.
 
-NAC is a small tool -- part of AeroTools -- meant to make it easier to for climate reseachers at Norwegian Meteorological Institute to use AeroTools, by making the conversion between their modeldata files and Aerocom3 data. 
+NAC is a small tool -- part of AeroTools -- meant to make it easier to for climate researchers at Norwegian Meteorological Institute to use AeroTools, by making the conversion between their modeldata files and Aerocom3 data. 
 
 ## Installation
 To install, use pip
@@ -15,7 +15,9 @@ this will install NAC as a command line tool
 ## Usage
 Use `nac <command> --help` to view the usage of the two commands.
 
-NAC is a command line tool, with two commands `convert` and `from-file`. We recommend using `from-file` as it easier to use, and reproduce results. The difference is that when using `convert` the arguments and options are given in the command line, while in `from-file` only a path to a *yaml* file is given, where the aruguments for the conversion is stored.
+NAC is a command line tool, with three commands `convert`, `from-file` and `list-species`. The first two are for conversion, while the latter is for listing possible chemical species. 
+
+We recommend using `from-file` as it easier to use, and reproduce results. The difference is that when using `convert` the arguments and options are given in the command line, while in `from-file` only a path to a *yaml* file is given, where the arguments for the conversion is stored.
 
 With `convert`
 ```
@@ -26,6 +28,21 @@ and with `from-file`
 ```
 nac from-file PATH  
 ```
+
+### Listing Species
+You can list all possible species defined in the *conversions.yaml* file (see below) with 
+
+```
+nac list-species
+```
+
+To look at information for a specified set of species, use
+
+```
+nac list-species <species1> ... <speciesN>
+```
+
+Where `<species1> ... <speciesN>` can be as many species as you want
 
 ### Conversion from File
 The yaml file given to NAC must have the following fields

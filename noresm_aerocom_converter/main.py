@@ -7,8 +7,11 @@ import yaml
 from pathlib import Path
 from datetime import datetime
 
-# from conversion_instructions import get_conversion_intstructions
+from rich.console import Console
+from rich.table import Table
 
+# from conversion_instructions import get_conversion_intstructions
+console = Console()
 app = typer.Typer(
     help="Small tool for converting NorESM modeldata to Aerocom3 modeldata"
 )
@@ -46,7 +49,7 @@ CONSTANTS = dict(
     # yaml file used for conversion commands
 )
 FREQUENCY = "monthly"
-YAML_FILE = "./conversions.yaml"
+YAML_FILE = "./noresm_aerocom_converter/conversions.yaml"
 
 
 class Level(str, Enum):
@@ -118,7 +121,7 @@ def save_aerocom_data(
     out_file = (
         f"{outdir}/aerocom3_{fullname}_{aerocomname}_{level}_{year}_{FREQUENCY}.nc"
     )
-    typer.echo(f"Saving file to {out_file}")
+    console.print(f"Saving file to {out_file}")
     data.to_netcdf(out_file)
 
 
@@ -149,7 +152,7 @@ def _convert(
         variables = list(instructions.keys())
     files = _get_file_list(inputdir, experiment, years)
     for year in files:
-        typer.echo(f"Converting for year {year}, with reference year {baseyear}")
+        console.print(f"Converting for year {year}, with reference year {baseyear}")
         data = _open_year_dataset(files[year])
         for var in instructions:
             if var in variables:
@@ -160,7 +163,7 @@ def _convert(
                     continue
 
                 if dry_run:
-                    typer.echo(f"Successfully made {var}. Won't save!")
+                    console.print(f"Successfully made {var}. Won't save!")
                     continue
 
                 save_aerocom_data(
@@ -216,6 +219,39 @@ def convert(
         variables,
         dry_run,
     )
+
+
+@app.command(
+    help="List all possible chemical species that are defined in conversion.yaml, and thus can be converted"
+)
+def list_species(
+    species: Annotated[
+        Optional[List[str]],
+        typer.Argument(
+            rich_help_panel="Print information for single species. If non given, all possible species are listed"
+        ),
+    ] = None,
+):
+    instruction = get_conversion_yaml()
+    species_list = sorted(instruction.keys())
+
+    if len(species) > 0:
+        species_used = []
+        for s in species:
+            if s in species_list:
+                species_used.append(s)
+        species_list = species_used[:]
+
+    table = Table("Species", "Unit", "Coordinates", "Formula")
+    for s in species_list:
+        table.add_row(
+            s,
+            instruction[s]["units"],
+            instruction[s]["coordinates"],
+            instruction[s]["formula"],
+        )
+
+    console.print(table)
 
 
 if __name__ == "__main__":

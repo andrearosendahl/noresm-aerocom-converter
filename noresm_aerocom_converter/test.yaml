@@ -5,7 +5,7 @@ fullname: NorESM2-LM-histSST_DURF-dust-spt
 baseyear: 2000
 ll: 31
 years: 
-  - 0005
+  - 10
 variables:
   - od440aer
   - sconcso4
