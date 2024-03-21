@@ -8,7 +8,8 @@ years:
   - 10
 variables:
   - od440aer
-  - sconcso4
-  - sconcdust
+  - concso4
+  - concdust
+  - od550aer
 dry_run: false
 
