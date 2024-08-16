@@ -4,10 +4,11 @@ version = "0.2.0"
 description = "A small conversion tool, that converts NorESM modeldata to Aerocom3 data"
 authors = ["Daniel Heinesen <danielh@met.no>"]
 readme = "README.md"
-packages = [{include = "noresm_aerocom_converter"}]
+packages = [{ include = "noresm_aerocom_converter" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+numpy = "<1.26.4"
 typer = "^0.9.0"
 rich = "^13.7.1"
 pathlib = "^1.0.1"
