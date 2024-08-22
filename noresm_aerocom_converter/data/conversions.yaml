@@ -228,6 +228,11 @@ od440aer:
   formula: x.DOD440
   new_name: od440aer
   units: '1'
+od440aer_v2:
+  coordinates: Column
+  formula: x.AODVIS
+  new_name: od440aer
+  units: '1'
 od440dust:
   coordinates: Column
   formula: x.D440_DU

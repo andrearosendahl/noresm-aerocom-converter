@@ -73,9 +73,11 @@ def _get_file_list(
     for year in years:
         file_year = []
         for month in range(1, 13):
-            file_year.append(
-                f"{inputdir}/atm/hist/{experiment}.cam.h0.{year}-{month:02}.nc"
-            )
+            full_name = f"{inputdir}/{experiment}.cam.h0.{year}-{month:02}.nc"
+            if Path(full_name).exists():
+                file_year.append(f"{inputdir}/{experiment}.cam.h0.{year}-{month:02}.nc")
+            else:
+                continue
         files[year] = file_year
 
     return files
@@ -111,7 +113,10 @@ def _make_aerocom_dataset(
     except Exception as e:
         print(f"Could not due conversion for {variable} due to {str(e)}")
         return
-    new_data = new_data[[variable, "time", "time_bnds", "lat", "lon"]]
+    try:
+        new_data = new_data[[variable, "time", "time_bnds", "lat", "lon"]]
+    except:
+        new_data = new_data[[variable, "time", "time_bounds", "lat", "lon"]]
     new_data[variable].attrs["units"] = instruction["units"]
     new_data.time.attrs["units"] = f"days since {year}-01-01 00:00:00"
 
@@ -161,8 +166,10 @@ def _convert(
         data = _open_year_dataset(files[year])
         for var in instructions:
             if var in variables:
+
+                new_var = instructions[var]["new_name"]
                 new_data = _make_aerocom_dataset(
-                    data, var, instructions[var], f"{baseyear:04}", ll
+                    data, new_var, instructions[var], f"{baseyear:04}", ll
                 )
                 if new_data is None:
                     continue
@@ -175,7 +182,7 @@ def _convert(
                     new_data,
                     outputdir,
                     fullname,
-                    var,
+                    new_var,
                     instructions[var]["coordinates"],
                     f"{baseyear + int(year):04}",
                 )
