@@ -7,12 +7,12 @@ readme = "README.md"
 packages = [{ include = "noresm_aerocom_converter" }]
 
 [tool.poetry.dependencies]
+numpy = ">=1.24.4, <2.0.0"
 python = "^3.10"
-numpy = "<1.26.4"
 typer = "^0.9.0"
 rich = "^13.7.1"
 pathlib = "^1.0.1"
-xarray = "<=2022.10.0"
+xarray = ">=2022.12.0"
 netcdf4 = "^1.6.5"
 dask = "^2024.2.1"
 pyyaml = "^6.0.1"
