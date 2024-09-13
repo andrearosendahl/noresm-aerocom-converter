@@ -73,11 +73,21 @@ def _get_file_list(
     for year in years:
         file_year = []
         for month in range(1, 13):
-            full_name = f"{inputdir}/{experiment}.cam.h0.{year}-{month:02}.nc"
-            if Path(full_name).exists():
-                file_year.append(f"{inputdir}/{experiment}.cam.h0.{year}-{month:02}.nc")
+            folder = Path(inputdir)
+            if folder.is_dir():
+                filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
+                for full_name in filenames:
+                    breakpoint()
+                    # full_name = f"{inputdir}/{experiment}.cam.h0*.{year}-{month:02}.nc"
+                    if Path(full_name).exists():
+                        file_year.append(
+                            # f"{inputdir}/{experiment}.cam.h0*.{year}-{month:02}.nc"
+                            full_name
+                        )
+                    else:
+                        continue
             else:
-                continue
+                raise ValueError(f"Folder {inputdir} does not exist")
         files[year] = file_year
 
     return files
