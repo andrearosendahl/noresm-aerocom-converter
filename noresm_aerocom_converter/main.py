@@ -77,7 +77,6 @@ def _get_file_list(
             if folder.is_dir():
                 filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
                 for full_name in filenames:
-                    breakpoint()
                     # full_name = f"{inputdir}/{experiment}.cam.h0*.{year}-{month:02}.nc"
                     if Path(full_name).exists():
                         file_year.append(
