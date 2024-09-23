@@ -515,7 +515,7 @@ concpm25:
   units: ug m-3
 concso2:
   coordinates: Surface
-  formula: (x.PS/287.0/TS)*x.SO2[:,{LL},:,:]*1e9*64.066/28.97
+  formula: (x.PS/287.0/x.TS)*x.SO2[:,{LL},:,:]*1e9*64.066/28.97
   new_name: concso2
   units: ug m-3
 concso4:
