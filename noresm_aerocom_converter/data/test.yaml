@@ -11,5 +11,6 @@ variables:
   - concso4
   - concdust
   - od550aer
+raw: true
 dry_run: false
 

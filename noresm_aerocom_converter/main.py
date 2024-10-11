@@ -55,6 +55,7 @@ FREQUENCY = "monthly"
 
 data_dir = joinpath(dirname(__file__), "data")
 YAML_FILE = Path(data_dir, "conversions.yaml")
+YAML_FILE_RAW = Path(data_dir, "conversions_raw.yaml")
 
 
 class Level(str, Enum):
@@ -144,8 +145,9 @@ def save_aerocom_data(
     data.to_netcdf(out_file)
 
 
-def get_conversion_yaml() -> dict[str, dict[str, str]]:
-    with open(YAML_FILE, "r") as f:
+def get_conversion_yaml(raw: bool) -> dict[str, dict[str, str]]:
+    filename = YAML_FILE_RAW if raw else YAML_FILE
+    with open(filename, "r") as f:
         instructions = yaml.safe_load(f)
 
     return instructions
@@ -160,13 +162,14 @@ def _convert(
     years: List[str],
     ll: int,
     variables: Optional[List[str]] = None,
+    raw: bool = False,
     dry_run: bool = False,
 ) -> None:
     for i, year in enumerate(years):
 
         years[i] = f"{int(year):04}"
 
-    instructions = get_conversion_yaml()  # get_conversion_intstructions(LL)
+    instructions = get_conversion_yaml(raw=raw)  # get_conversion_intstructions(LL)
     if variables is None:
         variables = list(instructions.keys())
     files = _get_file_list(inputdir, experiment, years)
@@ -181,6 +184,7 @@ def _convert(
                     data, new_var, instructions[var], f"{baseyear:04}", ll
                 )
                 if new_data is None:
+                    print(f"Failed to make {var}. Continuing")
                     continue
 
                 if dry_run:
@@ -224,6 +228,7 @@ def convert(
             rich_help_panel="Which variables to convert. If non is given, then everything is converted"
         ),
     ],
+    raw: Annotated[bool, typer.Option(rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used.")] = False,
     dry_run: Annotated[
         bool,
         typer.Option(rich_help_panel="Does all the conversions, but doesn't save."),
@@ -238,6 +243,7 @@ def convert(
         years,
         ll,
         variables,
+        raw,
         dry_run,
     )
 
@@ -252,8 +258,9 @@ def list_species(
             rich_help_panel="Print information for single species. If non given, all possible species are listed"
         ),
     ] = None,
+    raw: Annotated[bool, typer.Option(rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used.")] = False,
 ):
-    instruction = get_conversion_yaml()
+    instruction = get_conversion_yaml(raw=raw)
     species_list = sorted(instruction.keys())
 
     if len(species) > 0:
