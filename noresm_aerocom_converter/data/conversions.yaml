@@ -1,7 +1,13 @@
 concso4:
   coordinates: Surface
-  formula: x.sum_SO4
-  new_name: concso4t
+  formula: (x.ps/287.0/x.ts)*x.mmrso4[:,{LL},:,:]*1e9*64.066/28.97
+  new_name: concso4
+  units: ug m-3
+
+concso2:
+  coordinates: Surface
+  formula: (x.ps/287.0/x.ts)*x.so2[:,{LL},:,:]*1e9*64.066/28.97
+  new_name: concso2
   units: ug m-3
 
 od550aer:
@@ -15,3 +21,46 @@ od440aer:
   formula: x.od440aer
   new_name: od440aer
   units: '1'
+
+od550dust:
+  coordinates: Column
+  formula: x.od550dust
+  new_name: od550dust
+  units: '1'
+
+od550lt1aer:
+  coordinates: Column
+  formula: x.od550lt1aer
+  new_name: od550lt1aer
+  units: '1'
+
+od550lt1dust:
+  coordinates: Column
+  formula: x.od550lt1dust
+  new_name: od550lt1dust
+  units: '1'
+
+pr:
+  coordinates: Surface
+  formula: x.pr
+  new_name: pr
+  units: kg m-2 s-1
+
+prmm:
+  coordinates: Surface
+  formula: 1000*x.pr*3600*24/1000
+  new_name: prmm
+  units: mm day-1
+
+ts:
+  coordinates: Surface
+  formula: x.ts
+  new_name: ts
+  units: K
+
+wetso4:
+  coordinates: Surface
+  formula: -(x.wetso4)*1e6*24*3600
+  new_name: wetso4
+  units: mg m-2 d-1
+

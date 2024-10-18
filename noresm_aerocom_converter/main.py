@@ -37,7 +37,7 @@ AVAILABLEMONTHS = [
 # PERIOD=9999
 # PERIOD=1850
 CONSTANTS = dict(
-    LL=31,
+    #LL=31,
     # converts from sulfuric acid (H2SO4) to SO4 (96/98 MW)
     SF1="0.9796",
     # converts from ammonium sulfate (NH4_2SO4) to SO4 (96/134 MW)

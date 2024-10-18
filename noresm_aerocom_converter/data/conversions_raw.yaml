@@ -228,11 +228,6 @@ od440aer:
   formula: x.DOD440
   new_name: od440aer
   units: '1'
-od440aer_v2:
-  coordinates: Column
-  formula: x.AODVIS
-  new_name: od440aer
-  units: '1'
 od440dust:
   coordinates: Column
   formula: x.D440_DU
@@ -250,7 +245,12 @@ od440dustDSTA3:
   units: '1'
 od550aer:
   coordinates: Column
-  formula: x.DOD550
+  formula: x.DOD550/x.DAYFOC
+  new_name: od550aer
+  units: '1'
+od550aer_v2:
+  coordinates: Column
+  formula: x.AODVIS/x.DAYFOC
   new_name: od550aer
   units: '1'
 od550aerh2o:
@@ -340,9 +340,14 @@ orog:
   units: m
 pr:
   coordinates: Surface
-  formula: 1000*x.PRECT
+  formula: 1000*(x.PRECC+x.PRECL)
   new_name: pr
   units: kg m-2 s-1
+prmm:
+  coordinates: Surface
+  formula: (x.PRECC+x.PRECL)*1000*3600*24
+  new_name: prmm
+  units: mm day-1
 prc:
   coordinates: Column
   formula: 1000*x.PRECC
@@ -515,7 +520,7 @@ concpm25:
   units: ug m-3
 concso2:
   coordinates: Surface
-  formula: (x.PS/287.0/TS)*x.SO2[:,{LL},:,:]*1e9*64.066/28.97
+  formula: (x.PS/287.0/x.TS)*x.SO2[:,{LL},:,:]*1e9*64.066/28.97
   new_name: concso2
   units: ug m-3
 concso4:
@@ -568,6 +573,11 @@ wetdustDSTA3:
   formula: -1.0*(x.DST_A3SFWET+x.DST_A3_OCWSFWET)
   new_name: wetdustDSTA3
   units: kg m-2 s-1
+wetso4:
+  coordinates: Surface
+  formula: -(x.SO4_A1SFWET+x.SO4_A2SFWET+x.SO4_ACSFWET+x.SO4_NASFWET+x.SO4_PRSFWET+x.SO4_A1_OCWSFWET+x.SO4_A2_OCWSFWET+x.SO4_AC_OCWSFWET+x.SO4_NA_OCWSFWET+x.SO4_PR_OCWSFWET)*1e6*24*3600
+  new_name: wetso4
+  units: mg m-2 d-1
 ztp:
   coordinates: Column
   formula: x.TROP_Z
