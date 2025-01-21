@@ -128,10 +128,13 @@ def _make_aerocom_dataset(
     except:
         new_data = new_data[[variable, "time", "time_bounds", "lat", "lon"]]
     new_data[variable].attrs["units"] = instruction["units"]
-    new_data.time.attrs["units"] = f"days since {year}-01-01 00:00:00"
+    try:
+        new_data.time.attrs["units"] = data.time.attrs["units"]
+    except:
+        print(f"Warning: Could not find time units in NorESM file, used baseyear {year} instead")
+        new_data.time.attrs["units"] = f"days since {year}-01-01 00:00:00"
 
     new_data.attrs["converted at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     return new_data
 
 
@@ -168,7 +171,6 @@ def _convert(
     for i, year in enumerate(years):
 
         years[i] = f"{int(year):04}"
-
     instructions = get_conversion_yaml(raw=raw)  # get_conversion_intstructions(LL)
     if variables is None:
         variables = list(instructions.keys())
@@ -178,7 +180,6 @@ def _convert(
         data = _open_year_dataset(files[year])
         for var in instructions:
             if var in variables:
-
                 new_var = instructions[var]["new_name"]
                 new_data = _make_aerocom_dataset(
                     data, new_var, instructions[var], f"{baseyear:04}", ll
