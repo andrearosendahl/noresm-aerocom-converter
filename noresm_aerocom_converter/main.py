@@ -68,7 +68,7 @@ class Level(str, Enum):
 
 
 def _get_file_list(
-    inputdir: str, experiment: str, years: List[str]
+    inputdir: str, experiment: str, years: List[str], raw: bool
 ) -> dict[str, list[str]]:
     files = {}
     for year in years:
@@ -192,7 +192,7 @@ def _convert(
     instructions = get_conversion_yaml(raw=raw)  # get_conversion_intstructions(LL)
     if variables is None:
         variables = list(instructions.keys())
-    files = _get_file_list(inputdir, experiment, years)
+    files = _get_file_list(inputdir, experiment, years, raw)
     for year in files:
         console.print(f"Converting for year {year}, with reference year {baseyear}")
         data = _open_year_dataset(files[year])
