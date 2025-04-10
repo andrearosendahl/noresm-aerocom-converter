@@ -76,7 +76,7 @@ def _get_file_list(
         for month in range(1, 13):
             folder = Path(inputdir)
             if folder.is_dir():
-                filenames = folder.glob(f"{experiment}.cam.h0a.{year}-{month:02}.nc") if raw else folder.glob(f"{experiment}.cam.h1.{year}-{month:02}.nc") #EDIT: SHOULD BE H0 NOT H1 !!
+                filenames = folder.glob(f"{experiment}.cam.h0a.{year}-{month:02}.nc") if raw else folder.glob(f"{experiment}.cam.h0.{year}-{month:02}.nc")
                 #filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
                 for full_name in filenames:
                     # full_name = f"{inputdir}/{experiment}.cam.h0*.{year}-{month:02}.nc"
