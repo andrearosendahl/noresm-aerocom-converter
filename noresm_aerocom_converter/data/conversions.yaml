@@ -210,6 +210,11 @@ ts:
   formula: x.ts
   new_name: ts
   units: K
+ta:
+  coordinates: Level
+  formula: x.ta
+  new_name: ta
+  units: K
 
 sst:
   coordinates: Surface
@@ -239,7 +244,7 @@ wetbc:
   units: mg m-2 d-1
 wetdust:
   coordinates: Surface
-  formula: -(x.wetdust)*1e6*24*3600
+  formula: (x.wetdust)*1e6*24*3600
   new_name: wetdust
   units: mg m-2 d-1
 wetoa:
