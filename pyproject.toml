@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "noresm-aerocom-converter"
-version = "0.5.0"
+version = "0.6.0"
 description = "A small conversion tool, that converts NorESM modeldata to Aerocom3 data"
 authors = ["Daniel Heinesen <danielh@met.no>"]
 readme = "README.md"
