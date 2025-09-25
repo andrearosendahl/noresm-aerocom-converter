@@ -37,7 +37,7 @@ AVAILABLEMONTHS = [
 # PERIOD=9999
 # PERIOD=1850
 CONSTANTS = dict(
-    #LL=31,
+    # LL=31,
     # converts from sulfuric acid (H2SO4) to SO4 (96/98 MW)
     SF1="0.9796",
     # converts from ammonium sulfate (NH4_2SO4) to SO4 (96/134 MW)
@@ -76,8 +76,12 @@ def _get_file_list(
         for month in range(1, 13):
             folder = Path(inputdir)
             if folder.is_dir():
-                filenames = folder.glob(f"{experiment}.cam.h0a.{year}-{month:02}.nc") if raw else folder.glob(f"{experiment}.cam.h0.{year}-{month:02}.nc")
-                #filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
+                filenames = (
+                    folder.glob(f"{experiment}.cam.h0a.{year}-{month:02}.nc")
+                    if raw
+                    else folder.glob(f"{experiment}.cam.h0.{year}-{month:02}.nc")
+                )
+                # filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
                 for full_name in filenames:
                     # full_name = f"{inputdir}/{experiment}.cam.h0*.{year}-{month:02}.nc"
                     if Path(full_name).exists():
@@ -90,10 +94,12 @@ def _get_file_list(
             else:
                 raise ValueError(f"Folder {inputdir} does not exist")
 
-        if not file_year: #TEMPORARY FIX AS SOME RAW CASES HAVE DIFFERENT FILECODES
-            for month in range(1,13):
+        if not file_year:  # TEMPORARY FIX AS SOME RAW CASES HAVE DIFFERENT FILECODES
+            for month in range(1, 13):
                 if folder.is_dir():
-                    filenames = folder.glob(f"{experiment}.cam.h0*.{year}-{month:02}.nc")
+                    filenames = folder.glob(
+                        f"{experiment}.cam.h0*.{year}-{month:02}.nc"
+                    )
                     for full_name in filenames:
                         if Path(full_name).exists():
                             file_year.append(
@@ -149,7 +155,9 @@ def _make_aerocom_dataset(
     try:
         new_data.time.attrs["units"] = data.time.attrs["units"]
     except:
-        print(f"Warning: Could not find time units in NorESM file, used baseyear {year} instead")
+        print(
+            f"Warning: Could not find time units in NorESM file, used baseyear {year} instead"
+        )
         new_data.time.attrs["units"] = f"days since {year}-01-01 00:00:00"
 
     new_data.attrs["converted at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -187,7 +195,6 @@ def _convert(
     dry_run: bool = False,
 ) -> None:
     for i, year in enumerate(years):
-
         years[i] = f"{int(year):04}"
     instructions = get_conversion_yaml(raw=raw)  # get_conversion_intstructions(LL)
     if variables is None:
@@ -247,7 +254,12 @@ def convert(
             rich_help_panel="Which variables to convert. If non is given, then everything is converted"
         ),
     ],
-    raw: Annotated[bool, typer.Option(rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used.")] = False,
+    raw: Annotated[
+        bool,
+        typer.Option(
+            rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used."
+        ),
+    ] = False,
     dry_run: Annotated[
         bool,
         typer.Option(rich_help_panel="Does all the conversions, but doesn't save."),
@@ -277,12 +289,17 @@ def list_species(
             rich_help_panel="Print information for single species. If non given, all possible species are listed"
         ),
     ] = None,
-    raw: Annotated[bool, typer.Option(rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used.")] = False,
+    raw: Annotated[
+        bool,
+        typer.Option(
+            rich_help_panel="If true NAC assumes raw noresm files, and uses conversion_raw to convert. If false, CMORE is assumed, and conversions is used."
+        ),
+    ] = False,
 ):
     instruction = get_conversion_yaml(raw=raw)
     species_list = sorted(instruction.keys())
 
-    if len(species) > 0:
+    if species is not None and len(species) > 0:
         species_used = []
         for s in species:
             if s in species_list:
